@@ -1,0 +1,175 @@
+    @import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap');  
+    
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "League Spartan", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 400;
+        font-style: normal;
+    }
+
+    .wrapper{
+        height: 100vh;
+        position: relative;
+    }
+
+    .app{
+        padding-top: 50px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .newTaskSection{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .containerTasks{
+        width: 60%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .tasks{
+        margin-top: 10px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .tableTask{
+        width: 100%;
+        text-align: center;
+    }
+
+    .hide{
+        display: none;
+    }
+
+    .formNewTask{
+        padding-top: 25px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+    }
+
+    .section-grid-1{
+        grid-column: span 2;
+    }
+
+    .section-grid-2{
+        grid-column: span 2;
+    }
+
+    .section-grid-3{
+        grid-column: span 4;
+    }
+
+    .section-grid-4{
+        grid-column: span 3;
+    }
+
+    .section-grid-5{
+        grid-column: span 1;
+    }
+
+
+
+    .col {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    .textAreaDescripcion{
+        width: 100%;
+        height: 80px;
+        max-height: 250px;
+        min-height: 80px;
+        min-width: 100%;
+        max-width: 700px;
+    }
+    
+    .btn{
+        width: 100%;
+        padding: 5px 0px;
+        border-radius: 10px;
+        border: 1px;
+        color: white;
+        font-size: 18px;
+    }
+
+
+    .btnAdd{
+        background-color: #133E87;
+
+    }
+
+    .btnCancel{
+        background-color: #000000b0;
+    }
+
+    .mb{
+        margin-bottom: 10px !important;
+    }
+
+    .taskList{
+        display: flex;
+        justify-content: center;
+    }
+
+
+    .filter{
+        margin: 20px 0px;
+        display: flex;
+        width: 480px;
+        align-items: center;
+    }
+
+    .filterIcon{
+        display: flex;
+        stroke: #0000009f;
+
+    }
+
+    .inputStyle{
+        width: 100%;
+        border-radius: 10px;
+        border: 1px solid #0000004f;
+        padding: 5px 10px;
+        font-size: 20px;
+        margin: 0px 10px 0px 0px;
+    }
+
+    .filterFlex{
+        flex: 1;
+    }
+
+
+    .addTask{
+        padding: 8px 8px;
+        position: absolute;
+        bottom: 40px;
+        right: 50px;
+        background-color: #133E87;
+        width: 50px;
+        height: 50px;
+        border-radius: 25px;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+
+    h1{
+        font-weight: 600;
+        color: #133E87;
+    }
+
+    h2{
+        margin: 5px 0px 10px 0px;
+        color: #608BC1;
+    }
