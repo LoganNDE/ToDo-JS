@@ -1,8 +1,11 @@
 const body = $("body")
+let idTask = 0;
+let listID = [];
 
 
 class Tarea{
-    constructor(name, date, time, status, description){
+    constructor(id, name, date, time, status, description){
+        this.id = id;
         this.name = name;
         this.date = date
         this.time = time;
@@ -33,6 +36,7 @@ body.ready( () => {
 
     let addingTask = false;
     let tableCreate = false;
+    let messageCreate = false;
 
 
     loadTask = () =>{
@@ -43,7 +47,7 @@ body.ready( () => {
                 const table = $("<table>")
                 .addClass("tableTask")
                 
-                const titles = ["Nombre", "Fecha", "Tiempo", "Estado", "Descripción"];
+                const titles = ["Nombre", "Fecha", "Tiempo", "Estado", "Descripción", "Acciones"];
                 let thead = $("<thead>");
         
                 titles.forEach(t => {
@@ -57,30 +61,89 @@ body.ready( () => {
             }
 
             tasks.forEach(task => {
-                let table = $(".tableTask")
+                if (!listID.includes(task.id)){
+                    listID.push(task.id);
 
-                let trow = $("<tr>");
-                table.append(trow);
-    
-                let title = $("<td>").text(task.name)
-                trow.append(title);
-    
-                let date = $("<td>").text(task.date)
-                trow.append(date);
-                
-                let time = $("<td>").text(task.name)
-                trow.append(time);
-    
-                let status = $("<td>").text(task.status)
-                trow.append(status);
-                
-                let description = $("<td>").text(task.description)
-                trow.append(description);
-                
+                    let table = $(".tableTask")
+
+                    let trow = $("<tr>");
+                    trow.addClass("row");
+                    trow.attr('id', task.id)
+                    
+                    table.append(trow);
+        
+                    let title = $("<td>").text(task.name)
+                    trow.append(title);
+        
+                    let date = $("<td>").text(task.date)
+                    trow.append(date);
+                    
+                    let time = $("<td>").text(task.time)
+                    trow.append(time);
+        
+                    let status = $("<td>").text(task.status)
+                    trow.append(status);
+                    
+                    let descriptionText = task.description;
+                    let description = $("<td>");
+
+                    if (descriptionText.length > 30){
+                        let descriptionV1;
+                        descriptionV1 = descriptionText.slice(0, 30) + "...";
+                        description.text(descriptionV1);
+                    }else{
+                        description.text(descriptionText);
+                    }
+                    trow.append(description);
+
+
+
+
+
+                    let options = $("<td>")
+                    let optionDelete = $('<i class="fa-solid fa-trash"></i>').attr('id', "btnRemove");
+                    let optionEdit = $('<i class="fa-solid fa-pen"></i>').attr('id', "btnEdit");
+                    let optionView = $('<i class="fa-solid fa-eye"></i>').attr('id', "btnView");
+
+                    options.addClass("options")
+                    options.append(optionDelete);
+                    options.append(optionEdit);
+                    options.append(optionView);
+                    trow.append(options);
+
+                    
+                    optionDelete.click((event) =>{
+                        let taskId = $(event.target).closest('tr').attr('id');
+                        console.log(taskId)
+                        Swal.fire({
+                            title: "¿Estas seguro de eliminar esta tarea?",
+                            text: "Esta acción no se podrá revertir.",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#3085d6",
+                            cancelButtonColor: "#d33",
+                            cancelButtonText: "Cancelar",
+                            confirmButtonText: "¡Si, deseo eliminarla!"
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                            Swal.fire({
+                                title: "Tarea borrada con exito!",
+                                icon: "success"
+                            });
+                            $(`#${taskId}`).remove();
+                            }
+                        });
+                    })
+
+                }
             });
         }else{
-            let message = $("<h3>").text("No se ha agregado ninguna tarea 😢").addClass("noTask");
-            tasksContainer.append(message);
+            if (!messageCreate){
+                let message = $("<h3>").text("No se ha agregado ninguna tarea 😢").addClass("noTask");
+                tasksContainer.append(message);
+                messageCreate = true;
+            }
+            
         }
 
     }
@@ -122,7 +185,8 @@ body.ready( () => {
                 }
               });
 
-              let task = new Tarea(nameTask.val(), dateTask.val(), timeTask.val(), statusTask.val(), descriptionTask.val())
+              idTask++;
+              let task = new Tarea(idTask, nameTask.val(), dateTask.val(), timeTask.val(), statusTask.val(), descriptionTask.val())
               tasks.push(task);
               console.log(tasks);
         }
