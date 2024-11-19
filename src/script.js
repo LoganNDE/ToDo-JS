@@ -25,6 +25,7 @@ body.ready( () => {
     const iconAddTask = $(".iconAddTask");
     const iconHome = $(".iconHome");
     const btnAdd = $(".btnAdd");
+    const btnEdit = $(".btnEdit");
     const btnCancel = $(".btnCancel")
     const nameTask = $("#nameTask");
     const timeTask = $("#timeTask");
@@ -35,8 +36,10 @@ body.ready( () => {
     let tasks = [];
 
     let addingTask = false;
+    let editingTask = false;
     let tableCreate = false;
     let messageCreate = false;
+    let taskModified = false;
 
 
     loadTask = () =>{
@@ -61,7 +64,8 @@ body.ready( () => {
             }
 
             tasks.forEach(task => {
-                if (!listID.includes(task.id)){
+                if (!listID.includes(task.id) || taskModified){
+                    taskModified = false;
                     listID.push(task.id);
 
                     let table = $(".tableTask")
@@ -96,10 +100,6 @@ body.ready( () => {
                     }
                     trow.append(description);
 
-
-
-
-
                     let options = $("<td>")
                     let optionDelete = $('<i class="fa-solid fa-trash"></i>').attr('id', "btnRemove");
                     let optionEdit = $('<i class="fa-solid fa-pen"></i>').attr('id', "btnEdit");
@@ -112,45 +112,15 @@ body.ready( () => {
                     trow.append(options);
 
                     
-                    optionDelete.click((event) =>{
-                        let taskId = $(event.target).closest('tr').attr('id');
-                        console.log(taskId)
-                        Swal.fire({
-                            title: "¿Estas seguro de eliminar esta tarea?",
-                            text: "Esta acción no se podrá revertir.",
-                            icon: "warning",
-                            showCancelButton: true,
-                            confirmButtonColor: "#3085d6",
-                            cancelButtonColor: "#d33",
-                            cancelButtonText: "Cancelar",
-                            confirmButtonText: "¡Si, deseo eliminarla!"
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                            Swal.fire({
-                                title: "Tarea borrada con exito!",
-                                icon: "success"
-                            });
-                            $(`#${taskId}`).remove();
-                            }
-                        });
-                    })
-
+                    optionDelete.click(() => deleteTask(event));
+                    optionEdit.click(() => editTask(event));
                 }
-            });
+            })
         }else{
-            if (!messageCreate){
-                let message = $("<h3>").text("No se ha agregado ninguna tarea 😢").addClass("noTask");
-                tasksContainer.append(message);
-                messageCreate = true;
-            }
-            
+            messageHome();
         }
 
     }
-
-    loadTask();
-
-
 
     addTask.click(() =>{
         if (!addingTask){
@@ -192,6 +162,10 @@ body.ready( () => {
         }
     })
 
+
+
+
+
     btnCancel.click(() => {
         inHome();
     })
@@ -208,6 +182,7 @@ body.ready( () => {
     const inHome = () => {
         loadTask();
         addingTask = false;
+        editingTask = false;
         containerTasks.show();
         containerNewTask.hide();
         iconAddTask.show();
@@ -216,18 +191,109 @@ body.ready( () => {
 
     const inNewTask = () => {
         addingTask = true
+        clearFields();
+        checkAction();
+        var today = new Date();
+        dateTask.val(today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate());
+        console.log(today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate());
         containerTasks.hide();
         containerNewTask.show();
         iconAddTask.hide();
         iconHome.show();
     }
 
+    const inEditTask = (id) => {
+        addingTask = true
+        containerTasks.hide();
+        containerNewTask.show();
+        iconAddTask.hide();
+        iconHome.show();
+    }
+
+    const checkAction = () =>{
+        if(editingTask && !addingTask){
+            btnAdd.hide();
+            btnEdit.show();
+        }else{
+            btnAdd.show();
+            btnEdit.hide();
+        }
+    } 
+
+    const messageHome = () =>{
+        if (!messageCreate){
+            let message = $("<h3>").text("No se ha agregado ninguna tarea 😢").addClass("noTask");
+            tasksContainer.append(message);
+            messageCreate = true;
+        }
+    }
+
     const clearFields = () =>{
         nameTask.val('');
         timeTask.val('');
-        dateTask.val('');
         descriptionTask.val(''); 
     }
+
+
+    const deleteTask = (event) =>{
+        let taskId = $(event.target).closest('tr').attr('id');
+        console.log(taskId)
+        Swal.fire({
+            title: "¿Estas seguro de eliminar esta tarea?",
+            text: "Esta acción no se podrá revertir.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            cancelButtonText: "Cancelar",
+            confirmButtonText: "¡Si, deseo eliminarla!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+            Swal.fire({
+                title: "Tarea borrada con exito!",
+                icon: "success"
+            });
+            $(`#${taskId}`).remove();
+            }
+        })
+    }
+
+
+    const editTask = (event) =>{
+        editingTask = true;
+        checkAction();
+        let taskId = $(event.target).closest('tr').attr('id') - 1; //- 1 (Para coincidir con los index del array task)
+        inEditTask(taskId);
+
+        actTask = new Tarea();
+        actTask = tasks[parseInt(taskId)];
+
+        nameTask.val(actTask.name);
+        dateTask.val(actTask.date);
+        timeTask.val(actTask.time);
+        statusTask.val(actTask.status);
+        descriptionTask.val(actTask.description);
+        
+        btnEdit.click(() => aplyEditTask(taskId))
+    }
+
+    const aplyEditTask = (id) =>{
+        if (editingTask){
+            console.log(tasks[id])
+
+            tasks[id].name = nameTask.val();
+            tasks[id].date = dateTask.val();
+            tasks[id].time = timeTask.val();
+            tasks[id].status = statusTask.val();
+            tasks[id].description = descriptionTask.val();
+            taskModified = true;
+            $(`#${id + 1}`).remove();
+        }
+
+        console.log(tasks);
+    }
+
+    messageHome();
 })
 
 
