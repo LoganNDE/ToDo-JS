@@ -195,3 +195,27 @@
         margin: 5px 0px 10px 0px;
         color: #608BC1;
     }
+
+    .page:hover{
+        cursor: pointer;
+    }
+
+    .page{
+        font-size: 20px;
+    }
+
+    .changerPage{
+        font-size: 18px;
+    }
+
+    .options>*:hover{
+        cursor: pointer;
+    }
+
+    .shortDate{
+        padding-left: 20px;        
+    }
+    
+    .shortDate:hover{
+        cursor: pointer;
+    }

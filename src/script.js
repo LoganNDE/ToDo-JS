@@ -1,24 +1,26 @@
-const body = $("body")
-let idTask = 3;
-let listID = [];
-let currentPage = 1;
-let taskPerPage = 2;
-let index = 0;
-
-class Tarea{
-    constructor(id, name, date, time, status, description){
-        this.id = id;
-        this.name = name;
-        this.date = date
-        this.time = time;
-        this.status = status;
-        this.description = description;
+    class Tarea{
+        constructor(id, name, date, time, status, description){
+            this.id = id;
+            this.name = name;
+            this.date = date
+            this.time = time;
+            this.status = status;
+            this.description = description;
+            
+        }
     }
-}
 
+    const body = $("body")
+    let idTask = 0;
+    let listID = [];
+    let currentPage = 1;
+    let taskPerPage = 2;
+    let index = 0;
 
-body.ready( () => {
-
+    let tableCreate = false;
+    let addingTask = false;
+    let editingTask = false;
+    let taskModified = false;
 
     const containerTasks = $(".containerTasks");
     const containerNewTask = $(".containerNewTask");
@@ -35,57 +37,48 @@ body.ready( () => {
     const statusTask = $("#statusTask");
     const descriptionTask = $("#descriptionTask");
     const pagination = $(".pagination");
-
     //let tasks = [{"id": 1,"name": "Practicar Js","date": "2024-11-21","time": "1h y 30min","status": "En Progreso","description": "jdksaldjksadsadsa"},{"id": 2,"name": "Practicar GO","date": "2024-11-21","time": "2h","status": "En Progreso","description": "En proceso de aprendizaje"},{"id": 3,"name": "Practicar PHP","date": "2024-11-21","time": "9h","status": "En Progreso","description": "Socorro, PHP"}];
     let tasks = [];
 
-    console.log(tasks)
-
-    let addingTask = false;
-    let editingTask = false;
-    let tableCreate = false;
-    let taskModified = false;
-
-
     const messageHome = () =>{
-        console.log("hola")
         $(".noTasks").show();
     }
 
+    const createTable = () => {
+            const table = $("<table>")
+            .addClass("tableTask")
+            
+            const titles = ["Nombre", "Fecha", "Tiempo", "Estado", "Descripción", "Acciones"];
+            let thead = $("<thead>");
+    
+            titles.forEach(t => {
+                let title = $("<td>").text(t)
+                thead.append(title);
+                if (t == "Fecha"){
+                title.append($("<span>").html('<i class="fa-solid fa-sort-up shortDate"></i>'));
+                /*Delega el evento click al elemento body y lo aplicará a cualquier elemento con la clase shortDate, incluso si se crea dinámicamente.*/
+                $("body").on("click", ".shortDate", shortDate);
+                }
+            });
+    
+            table.append(thead)
+            tasksContainer.append(table);
+            tableCreate = true;
+        }
+ 
     loadTask = (currPage = 1) =>{
         if (tasks.length > 0){
             $(".noTasks").remove();
-            console.log("mensaje borrado")
-
-            if (!tableCreate){
-                const table = $("<table>")
-                .addClass("tableTask")
-                
-                const titles = ["Nombre", "Fecha", "Tiempo", "Estado", "Descripción", "Acciones"];
-                let thead = $("<thead>");
-        
-                titles.forEach(t => {
-                    let title = $("<td>").text(t)
-                    thead.append(title);
-                });
-        
-                table.append(thead)
-                tasksContainer.append(table);
-                tableCreate = true;
+            
+            if (!tableCreate) {
+                createTable();
             }
 
-            let limit = taskPerPage * currentPage; // Define el máximo de iteraciones que deseas realizar
             currentPage = currPage;
-            console.log(currentPage);
-            if (currentPage == 2){
-                index = index + 2;
-            }
-            console.log(index<tasks.length);
-            console.log("index " + index);
-            console.log("long array " + tasks.length);
+            let limit = taskPerPage * currentPage; // Define el máximo de iteraciones que deseas realizar
+            index = limit - taskPerPage;
 
             for (index; index < tasks.length && index < limit; index++) {
-                console.log("He entrado en el for en la pagina " + currentPage);
                 let task = tasks[index]; // Toma el elemento actual del array
                 
                 if (!listID.includes(task.id) || taskModified) {
@@ -126,16 +119,14 @@ body.ready( () => {
                     let options = $("<td>");
                     let optionDelete = $('<i class="fa-solid fa-trash"></i>').attr('id', "btnRemove");
                     let optionEdit = $('<i class="fa-solid fa-pen"></i>').attr('id', "btnEdit");
-                    let optionView = $('<i class="fa-solid fa-eye"></i>').attr('id', "btnView");
             
                     options.addClass("options");
                     options.append(optionDelete);
                     options.append(optionEdit);
-                    options.append(optionView);
                     trow.append(options);
             
-                    optionDelete.click(() => deleteTask(event));
-                    optionEdit.click(() => editTask(event));
+                    optionDelete.click((event) => deleteTask(event));
+                    optionEdit.click((event) => editTask(event));
                 }
             }
             
@@ -156,7 +147,6 @@ body.ready( () => {
     })
 
     btnAdd.click(() =>{
-        console.log(checkFileds());
         if (!checkFileds()){
             Swal.fire({
                 title: '¡Error! Debes rellenar todos los campos',
@@ -171,7 +161,6 @@ body.ready( () => {
                 showDenyButton: true,
                 denyButtonText: `Volver al inicio`
               }).then((result) =>{
-                console.log(result);
                 if (result.isDenied){
                     inHome();
                 }
@@ -183,7 +172,6 @@ body.ready( () => {
               idTask++;
               let task = new Tarea(idTask, nameTask.val(), dateTask.val(), timeTask.val(), statusTask.val(), descriptionTask.val())
               tasks.push(task);
-              console.log(tasks);
         }
     })
 
@@ -197,7 +185,6 @@ body.ready( () => {
         if (!nameTask.val() || !timeTask.val() || !dateTask.val() || !descriptionTask.val()){
             return false
         }
-
         return true;
     }
 
@@ -211,7 +198,6 @@ body.ready( () => {
         iconHome.hide();
 
         showPagination();
-    
     }
 
     const inNewTask = () => {
@@ -220,18 +206,9 @@ body.ready( () => {
         checkAction();
         var today = new Date();
         dateTask.val(today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate());
-        console.log(today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate());
         containerTasks.hide();
         containerNewTask.show();
         pagination.hide();
-        iconAddTask.hide();
-        iconHome.show();
-    }
-
-    const inEditTask = (id) => {
-        addingTask = true
-        containerTasks.hide();
-        containerNewTask.show();
         iconAddTask.hide();
         iconHome.show();
     }
@@ -255,7 +232,6 @@ body.ready( () => {
 
     const deleteTask = (event) =>{
         let taskId = $(event.target).closest('tr').attr('id');
-        console.log(taskId)
         Swal.fire({
             title: "¿Estas seguro de eliminar esta tarea?",
             text: "Esta acción no se podrá revertir.",
@@ -276,14 +252,24 @@ body.ready( () => {
         })
     }
 
+    const inEditTask = () => {
+        editingTask = true
+        containerTasks.hide();
+        containerNewTask.show();
+        iconAddTask.hide();
+        iconHome.show();
+        pagination.hide();
+    }
 
     const editTask = (event) =>{
-        editingTask = true;
+        inEditTask();
         checkAction();
         let taskId = $(event.target).closest('tr').attr('id') - 1; //- 1 (Para coincidir con los index del array task)
-        inEditTask(taskId);
+        console.log(taskId);
 
         actTask = new Tarea();
+        console.log(actTask);
+        console.log("1212 " + tasks[parseInt(taskId)]);
         actTask = tasks[parseInt(taskId)];
 
         nameTask.val(actTask.name);
@@ -295,11 +281,53 @@ body.ready( () => {
         btnEdit.click(() => aplyEditTask(taskId))
     }
 
+        const aplyEditTask = (id) =>{
+        Swal.fire({
+            title: "¿Estas seguro que desea modificar esta tarea?",
+            text: "Esta acción no se podrá revertir.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            cancelButtonText: "Cancelar",
+            confirmButtonText: "¡Si, deseo actualizarla!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+            Swal.fire({
+                icon: "success",
+                title: "La tarea se ha modificado correctamente",
+                confirmButtonText: "Agregar nueva tarea",
+                showDenyButton: true,
+                denyButtonText: `Volver al inicio`
+              }).then((result) =>{
+                if (result.isDenied){
+                    inHome();
+                }
+                if (result.isConfirmed){
+                    clearFields();
+                    editingTask = false;
+                    checkAction();
+                }
+              });
+              console.log(tasks[id])
+              tasks[id].name = nameTask.val();
+              tasks[id].date = dateTask.val();
+              tasks[id].time = timeTask.val();
+              tasks[id].status = statusTask.val();
+              tasks[id].description = descriptionTask.val();
+              taskModified = true;
+              $(`#${id + 1}`).remove();
+            }
+        })
+
+        console.log(tasks);
+    }
 
     const showPagination = () => {
         if ($("#pageSection") != null){
             $("#pageSection").remove();
         }
+
         const paginationSection = $("<div>").attr("id", "pageSection");
         pagination.append(paginationSection);
         let numberPages = Math.ceil(tasks.length/taskPerPage);
@@ -307,42 +335,36 @@ body.ready( () => {
         for (let i = 0; i < numberPages; i++){
             pages.push(i+1)
         }
-        console.log(pages);
 
-        paginationSection.append($("<span>").text("<"))
+        paginationSection.append($("<span>").text("<").addClass("changerPage changerLeft"));
 
         for (let i = 0; i < pages.length; i++){
-            paginationSection.append($("<span>").text(i+1).addClass("page").attr('onclick', "loadTask("+ (i+1) +")"))
+            paginationSection.append($("<span>").text(i+1).addClass("page").attr('onclick', "changePage("+ (i+1) +")"));
         }
 
-        paginationSection.append($("<span>").text(">"))
+        paginationSection.append($("<span>").text(">").addClass("changerPage changerRight"));
 
         pagination.show();
     }
 
+    const deleteTable= () => {
+        listID = [];
+        tableCreate = false;
+        $(".tableTask").remove();
 
-    $(".page").click(() =>{
-        loadTask();
-    })
-
-    const aplyEditTask = (id) =>{
-        
-        if (editingTask){
-            console.log(tasks[id])
-
-            tasks[id].name = nameTask.val();
-            tasks[id].date = dateTask.val();
-            tasks[id].time = timeTask.val();
-            tasks[id].status = statusTask.val();
-            tasks[id].description = descriptionTask.val();
-            taskModified = true;
-            $(`#${id + 1}`).remove();
-        }
-
-        console.log(tasks);
     }
 
-})
+    const changePage = (currPage) =>{
+        deleteTable();
+        loadTask(currPage);
+    }
+
+    const shortDate = () => {
+        tasks.sort((a, b) => a.date > b.date)
+        deleteTable();
+        loadTask();
+    }
+
 
 
 
