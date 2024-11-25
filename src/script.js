@@ -1,7 +1,8 @@
     class Tarea{
-        constructor(id, name, date, time, status, description){
+        constructor(id, name, deadline, date, time, status, description){
             this.id = id;
             this.name = name;
+            this.deadline = deadline
             this.date = date
             this.time = time;
             this.status = status;
@@ -40,24 +41,32 @@
     //let tasks = [{"id": 1,"name": "Practicar Js","date": "2024-11-21","time": "1h y 30min","status": "En Progreso","description": "jdksaldjksadsadsa"},{"id": 2,"name": "Practicar GO","date": "2024-11-21","time": "2h","status": "En Progreso","description": "En proceso de aprendizaje"},{"id": 3,"name": "Practicar PHP","date": "2024-11-21","time": "9h","status": "En Progreso","description": "Socorro, PHP"}];
     let tasks = [];
 
-    const messageHome = () =>{
+    const ShowMessageHome = () =>{
         $(".noTasks").show();
+    }
+
+    const deleteTable = () => {
+        listID = [];
+        tableCreate = false;
+        $(".tableTask").remove();
     }
 
     const createTable = () => {
             const table = $("<table>")
             .addClass("tableTask")
             
-            const titles = ["Nombre", "Fecha", "Tiempo", "Estado", "Descripción", "Acciones"];
+            const titles = ["Nombre", "Fecha Limite" ,"Fecha Alta", "Tiempo", "Estado", "Descripción", "Acciones"];
             let thead = $("<thead>");
     
             titles.forEach(t => {
                 let title = $("<td>").text(t)
-                thead.append(title);
-                if (t == "Fecha"){
-                title.append($("<span>").html('<i class="fa-solid fa-sort-up shortDate"></i>'));
+                thead.append(title);shortDateLower
+                if (t == "Fecha Limite"){
+                title.append($("<span>").html('<i class="fa-solid fa-arrow-down-short-wide shortDateLower"></i>' + '<i class="fa-solid fa-arrow-up-wide-short shortDateUp"></i>'));
                 /*Delega el evento click al elemento body y lo aplicará a cualquier elemento con la clase shortDate, incluso si se crea dinámicamente.*/
-                $("body").on("click", ".shortDate", shortDate);
+                $("body").on("click", ".shortDateLower", shortDateLower);
+                $("body").on("click", ".shortDateUp", shortDateUP);
+
                 }
             });
     
@@ -68,7 +77,7 @@
  
     loadTask = (currPage = 1) =>{
         if (tasks.length > 0){
-            $(".noTasks").remove();
+            $(".noTasks").hide();
             
             if (!tableCreate) {
                 createTable();
@@ -96,6 +105,9 @@
                     let title = $("<td>").text(task.name);
                     trow.append(title);
             
+                    let deadline = $("<td>").text(task.deadline);
+                    trow.append(deadline);
+
                     let date = $("<td>").text(task.date);
                     trow.append(date);
             
@@ -131,7 +143,9 @@
             }
             
         }else{
-            messageHome();
+            ShowMessageHome();
+            pagination.hide();
+            deleteTable();
         }
 
     }
@@ -170,7 +184,7 @@
               });
 
               idTask++;
-              let task = new Tarea(idTask, nameTask.val(), dateTask.val(), timeTask.val(), statusTask.val(), descriptionTask.val())
+              let task = new Tarea(idTask, nameTask.val(), dateTask.val(), checkDay() ,timeTask.val(), statusTask.val(), descriptionTask.val())
               tasks.push(task);
         }
     })
@@ -196,16 +210,14 @@
         containerNewTask.hide();
         iconAddTask.show();
         iconHome.hide();
-
-        showPagination();
+        if (tasks.length !== 0) showPagination();
     }
 
     const inNewTask = () => {
         addingTask = true
         clearFields();
         checkAction();
-        var today = new Date();
-        dateTask.val(today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate());
+        dateTask.val(checkDay());
         containerTasks.hide();
         containerNewTask.show();
         pagination.hide();
@@ -247,7 +259,15 @@
                 title: "Tarea borrada con exito!",
                 icon: "success"
             });
-            $(`#${taskId}`).remove();
+                $(`#${taskId}`).remove();
+                idTaskDelete = tasks.findIndex(task => task.id == taskId);
+                tasks.splice(idTaskDelete, 1);
+                if (tasks.length > 0){
+                    showPagination();
+                    console.log(tasks)
+                    deleteTable();    
+                }
+                loadTask();
             }
         })
     }
@@ -347,23 +367,29 @@
         pagination.show();
     }
 
-    const deleteTable= () => {
-        listID = [];
-        tableCreate = false;
-        $(".tableTask").remove();
-
-    }
-
     const changePage = (currPage) =>{
         deleteTable();
         loadTask(currPage);
     }
 
-    const shortDate = () => {
-        tasks.sort((a, b) => a.date > b.date)
+    const shortDateLower = () => {
+        tasks.sort((a, b) => new Date(a.date) - new Date(b.date)) //Orden ascendente (menor a mayor fecha)
         deleteTable();
         loadTask();
     }
+
+    const shortDateUP = () => {
+        tasks.sort((a, b) => new Date(b.date) - new Date(a.date)) //Orden descendentemente (mayor a menor fecha)
+        deleteTable();
+        loadTask();
+    }
+
+    const checkDay = () => {
+        var today = new Date();
+        return (today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate());
+    }
+
+
 
 
 

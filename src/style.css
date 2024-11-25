@@ -45,11 +45,13 @@
     .tableTask{
         width: 100%;
         border-collapse: collapse;
+        table-layout: fixed;
     }
 
     .options{
         display: flex;
         gap: 15px;
+        justify-content: center;
     }
 
     .options>*{
@@ -57,7 +59,7 @@
     }
 
     thead>*{
-        font-size: 22px;
+        font-size: 18px;
         padding-bottom: 10px;
     }
 
@@ -185,6 +187,10 @@
         font-family: Arial, Helvetica, sans-serif;
     }
 
+    .addTask:hover{
+        cursor: pointer;
+    }
+
 
     h1{
         font-weight: 600;
@@ -212,10 +218,28 @@
         cursor: pointer;
     }
 
-    .shortDate{
-        padding-left: 20px;        
+    .shortDateLower{
+        padding-left: 10px;
+        font-size: 18px;     
+    }
+
+    .shortDateUp{
+        padding-left: 5px;    
+        font-size: 18px;
     }
     
-    .shortDate:hover{
+    .shortDateLower:hover{
         cursor: pointer;
+    }
+        
+    .shortDateUp:hover{
+        cursor: pointer;
+    }
+
+    thead td{
+        text-align: center;
+    }
+
+    tr{
+        text-align: center;
     }
