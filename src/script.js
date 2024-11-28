@@ -7,7 +7,6 @@
             this.time = time;
             this.status = status;
             this.description = description;
-            
         }
     }
 
@@ -60,9 +59,13 @@
     
             titles.forEach(t => {
                 let title = $("<td>").text(t)
-                thead.append(title);shortDateLower
+                thead.append(title);
                 if (t == "Fecha Limite"){
                 title.append($("<span>").html('<i class="fa-solid fa-arrow-down-short-wide shortDateLower"></i>' + '<i class="fa-solid fa-arrow-up-wide-short shortDateUp"></i>'));
+                
+                // Elimina los eventos previos antes de añadir nuevos manejadores
+                $("body").off("click", ".shortDateLower", shortDateLower);
+                $("body").off("click", ".shortDateUp", shortDateUP);
                 /*Delega el evento click al elemento body y lo aplicará a cualquier elemento con la clase shortDate, incluso si se crea dinámicamente.*/
                 $("body").on("click", ".shortDateLower", shortDateLower);
                 $("body").on("click", ".shortDateUp", shortDateUP);
@@ -293,7 +296,7 @@
         actTask = tasks[parseInt(taskId)];
 
         nameTask.val(actTask.name);
-        dateTask.val(actTask.date);
+        dateTask.val(actTask.deadline);
         timeTask.val(actTask.time);
         statusTask.val(actTask.status);
         descriptionTask.val(actTask.description);
@@ -373,13 +376,17 @@
     }
 
     const shortDateLower = () => {
-        tasks.sort((a, b) => new Date(a.date) - new Date(b.date)) //Orden ascendente (menor a mayor fecha)
+        console.log("ORDENAR MENOR A MAYOR"); 
+        tasks.sort((a, b) => new Date(a.deadline) - new Date(b.deadline)) //Orden ascendente (menor a mayor fecha)
+        console.log("Tareas ordenadas (ascendente):", tasks);
         deleteTable();
         loadTask();
     }
 
     const shortDateUP = () => {
-        tasks.sort((a, b) => new Date(b.date) - new Date(a.date)) //Orden descendentemente (mayor a menor fecha)
+        console.log("ORDENAR MAYOR A MENOR");
+        tasks.sort((a, b) => new Date(b.deadline) - new Date(a.deadline)) //Orden descendentemente (mayor a menor fecha)
+        console.log("Tareas ordenadas (descendentemente):", tasks);
         deleteTable();
         loadTask();
     }

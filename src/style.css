@@ -219,13 +219,13 @@
     }
 
     .shortDateLower{
-        padding-left: 10px;
-        font-size: 18px;     
+        padding-left: 5px;
+        font-size: 12px;     
     }
 
     .shortDateUp{
         padding-left: 5px;    
-        font-size: 18px;
+        font-size: 12px;
     }
     
     .shortDateLower:hover{
