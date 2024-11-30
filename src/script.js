@@ -14,7 +14,7 @@
     let idTask = 0;
     let listID = [];
     let currentPage = 1;
-    let taskPerPage = 2;
+    let taskPerPage = 5;
     let index = 0;
 
     let tableCreate = false;
@@ -359,13 +359,13 @@
             pages.push(i+1)
         }
 
-        paginationSection.append($("<span>").text("<").addClass("changerPage changerLeft"));
+        paginationSection.append($("<span>").text("<").addClass("changerPage changerLeft").attr('onclick', "previousPage()"));
 
         for (let i = 0; i < pages.length; i++){
             paginationSection.append($("<span>").text(i+1).addClass("page").attr('onclick', "changePage("+ (i+1) +")"));
         }
 
-        paginationSection.append($("<span>").text(">").addClass("changerPage changerRight"));
+        paginationSection.append($("<span>").text(">").addClass("changerPage changerRight").attr('onclick', "nextPage()"));
 
         pagination.show();
     }
@@ -373,6 +373,23 @@
     const changePage = (currPage) =>{
         deleteTable();
         loadTask(currPage);
+    }
+
+    const previousPage = () =>{
+        if (currentPage > 1){
+            currentPage--;
+            deleteTable();
+            loadTask(currentPage);
+        }
+    }
+
+    const nextPage = () =>{
+        console.log(currentPage < Math.ceil(tasks.length/taskPerPage));
+        if (currentPage < Math.ceil(tasks.length/taskPerPage)){
+            currentPage++;
+            deleteTable();
+            loadTask(currentPage);
+        }
     }
 
     const shortDateLower = () => {

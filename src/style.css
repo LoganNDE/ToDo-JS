@@ -243,3 +243,18 @@
     tr{
         text-align: center;
     }
+
+    #pageSection{
+        display: flex;
+        gap: 2px
+    }
+
+    .changerPage{
+        color: #133E87;
+        font-size: 24px;
+    }
+
+    
+    .changerPage:hover{
+        cursor: pointer;
+    }
